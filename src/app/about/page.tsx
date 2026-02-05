@@ -1,10 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { Award, Users, Heart, Lightbulb, Target, Puzzle, Handshake, Brain, Sparkles } from "lucide-react"
 import { Header } from "@/components/layout/Header"
+import { TeamMemberModal, type TeamMember } from "@/components/about/TeamMemberModal"
 import { team, values, awards } from "@/data/content"
 
 // Value icons mapping
@@ -12,11 +15,12 @@ const valueIcons: Record<string, React.ReactNode> = {
   Empathy: <Heart className="h-6 w-6" />,
   Integrity: <Target className="h-6 w-6" />,
   Strategic: <Brain className="h-6 w-6" />,
-  Curious: <Lightbulb className="h-6 w-6" />,
+  Curiosity: <Lightbulb className="h-6 w-6" />,
   Creative: <Sparkles className="h-6 w-6" />,
   Collaborative: <Puzzle className="h-6 w-6" />,
   Invested: <Handshake className="h-6 w-6" />,
   Insightful: <Users className="h-6 w-6" />,
+  Authenticity: <Award className="h-6 w-6" />,
 }
 
 // Animation variants
@@ -38,17 +42,9 @@ const scaleIn = {
   animate: { opacity: 1, scale: 1 },
 }
 
-// Get initials from name
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2)
-}
-
 export default function AboutPage() {
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+
   return (
     <>
       <Header />
@@ -110,7 +106,7 @@ export default function AboutPage() {
               whileInView="animate"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {values.map((value, index) => (
                 <motion.div
@@ -130,7 +126,7 @@ export default function AboutPage() {
                         <h3 className="font-serif text-xl font-bold text-foreground mb-2">
                           {value.title}
                         </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                           {value.description}
                         </p>
                       </div>
@@ -174,14 +170,29 @@ export default function AboutPage() {
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                   className="group"
                 >
-                  <div className="relative flex flex-col items-center text-center p-6 rounded-2xl border border-transparent bg-card/30 transition-all duration-300 hover:border-dunn-purple/20 hover:bg-card/60 hover:shadow-lg hover:scale-105">
+                  <div
+                    onClick={() => setSelectedMember(member as TeamMember)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        setSelectedMember(member as TeamMember)
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    className="relative flex flex-col items-center text-center p-6 rounded-2xl border border-transparent bg-card/30 transition-all duration-300 hover:border-dunn-purple/20 hover:bg-card/60 hover:shadow-lg hover:scale-105 cursor-pointer focus:outline-none focus:ring-2 focus:ring-dunn-purple focus:ring-offset-2 focus:ring-offset-background"
+                  >
                     {/* Avatar */}
                     <div className="relative mb-4">
                       <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-dunn-purple/30 to-dunn-purple-light/30 opacity-0 group-hover:opacity-100 blur-md transition-opacity duration-300" />
-                      <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-dunn-purple/20 bg-gradient-to-br from-dunn-purple/10 to-dunn-purple-light/10 flex items-center justify-center overflow-hidden">
-                        <span className="text-xl md:text-2xl font-serif font-bold text-dunn-purple">
-                          {getInitials(member.name)}
-                        </span>
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full border-2 border-dunn-purple/20 overflow-hidden">
+                        <Image
+                          src={member.image}
+                          alt={member.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 80px, 96px"
+                        />
                       </div>
                     </div>
 
@@ -317,6 +328,12 @@ export default function AboutPage() {
         {/* Footer spacer */}
         <div className="h-20" />
       </main>
+
+      {/* Team Member Modal */}
+      <TeamMemberModal
+        member={selectedMember}
+        onClose={() => setSelectedMember(null)}
+      />
     </>
   )
 }
