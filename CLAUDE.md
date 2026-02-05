@@ -94,6 +94,19 @@ Custom CSS variables (see `globals.css`):
 - AccessiBeWidget for WCAG 2.1 AA compliance
 - Semantic HTML throughout
 
+## Maintaining This File
+
+**Keep CLAUDE.md updated** when making changes:
+
+- **New pages**: Add to Project Structure and update navigation info
+- **New components**: Document in appropriate section (ui/, home/, etc.)
+- **New data types**: Add to Content Management section
+- **New dependencies**: Update Tech Stack
+- **New patterns**: Document in Key Patterns
+- **Config changes**: Update Build & Deploy section
+
+This file is the primary context for AI sessions - outdated info wastes tokens and causes confusion.
+
 ## Repository
 
 GitHub: https://github.com/unobtuse/Dunn
