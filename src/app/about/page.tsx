@@ -5,8 +5,10 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Award, Users, Heart, Lightbulb, Target, Puzzle, Handshake, Brain, Sparkles } from "lucide-react"
+import { Award, Users, Heart, Lightbulb, Target, Puzzle, Handshake, Brain, Sparkles, ArrowRight } from "lucide-react"
+import { GlassButton } from "@/components/ui/glass-button"
 import { Header } from "@/components/layout/Header"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { TeamMemberModal, type TeamMember } from "@/components/about/TeamMemberModal"
 import { team, values, awards } from "@/data/content"
 
@@ -50,38 +52,12 @@ export default function AboutPage() {
       <Header />
       <main id="main-content" className="min-h-screen bg-background">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-dunn-purple/5 via-transparent to-dunn-purple/3" />
-          <div className="absolute top-1/4 -left-32 w-64 h-64 bg-dunn-purple/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-32 w-64 h-64 bg-dunn-green/10 rounded-full blur-3xl" />
-
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial="initial"
-              animate="animate"
-              variants={staggerContainer}
-              className="text-center max-w-4xl mx-auto"
-            >
-              <motion.h1
-                variants={fadeInUp}
-                transition={{ duration: 0.6 }}
-                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6"
-              >
-                About <span className="text-dunn-purple">Dunn Marketing</span>
-              </motion.h1>
-
-              <motion.p
-                variants={fadeInUp}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-lg md:text-xl text-muted-foreground leading-relaxed"
-              >
-                Our mission is to fuel the success of organizations making a positive impact
-                on society through world-class, empathy-driven brand building.
-              </motion.p>
-            </motion.div>
-          </div>
-        </section>
+        <PageHeader
+          badge="About Us"
+          title="About Dunn Marketing"
+          titleAccent="Dunn Marketing"
+          description="Our mission is to fuel the success of organizations making a positive impact on society through world-class, empathy-driven brand building."
+        />
 
         {/* Our Values Section */}
         <section className="py-20 md:py-28 bg-gradient-to-b from-background via-dunn-purple/5 to-background">
@@ -288,39 +264,68 @@ export default function AboutPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 md:py-28">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section className="py-24 lg:py-32 relative overflow-hidden">
+          {/* Gradient background */}
+          <div
+            className="absolute inset-0 -z-10"
+            style={{
+              background: `
+                radial-gradient(ellipse 60% 50% at 50% 100%, var(--dunn-purple) 0%, transparent 60%),
+                linear-gradient(to bottom, var(--background), var(--muted))
+              `,
+            }}
+          />
+
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="relative"
+              className="max-w-3xl mx-auto text-center"
             >
-              {/* Background glow */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-dunn-purple/20 via-dunn-purple-light/20 to-dunn-purple/20 blur-2xl" />
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6"
+              >
+                Ready to work with us?
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
+                  Let&apos;s connect.
+                </span>
+              </motion.h2>
 
-              <div className="relative rounded-3xl border border-dunn-purple/20 bg-gradient-to-br from-dunn-purple/5 to-dunn-purple-light/5 backdrop-blur-sm p-8 md:p-12 lg:p-16 text-center">
-                <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  Ready to work with us?
-                </h2>
-                <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-                  Let&apos;s start a conversation about how we can help your organization thrive
-                  through empathy-driven brand building.
-                </p>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto"
+              >
+                Start a conversation about how we can help your organization thrive
+                through empathy-driven brand building.
+              </motion.p>
 
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center px-8 py-4 rounded-xl font-medium text-white bg-gradient-to-r from-dunn-purple to-dunn-purple-dark shadow-lg shadow-dunn-purple/25 hover:shadow-xl hover:shadow-dunn-purple/30 transition-all duration-300"
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+              >
+                <Link href="/contact">
+                  <GlassButton
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[0_4px_20px_var(--glow-primary)] hover:shadow-[0_8px_30px_var(--glow-primary)] transition-all duration-300"
+                    glowEffect
                   >
                     Get in Touch
-                  </Link>
-                </motion.div>
-              </div>
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </GlassButton>
+                </Link>
+              </motion.div>
             </motion.div>
           </div>
         </section>

@@ -2,12 +2,15 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { ArrowRight, Award, TrendingUp, Users, Target, BarChart3 } from "lucide-react"
 import { GlassCard, GlassCardContent, GlassCardHeader } from "@/components/ui/glass-card"
 import { GlassButton } from "@/components/ui/glass-button"
 import { GlassBadge } from "@/components/ui/glass-badge"
-import { caseStudies, siteConfig } from "@/data/content"
+import { PageHeader } from "@/components/layout/PageHeader"
+import { siteConfig } from "@/data/content"
+import { fetchCaseStudies, CaseStudy } from "@/lib/case-studies"
 
 // Animated counter component for metrics
 function AnimatedCounter({
@@ -49,15 +52,20 @@ function AnimatedCounter({
   )
 }
 
-// Case study card component
+// Case study card component for WordPress case studies
 function CaseStudyCard({
   study,
   index
 }: {
-  study: typeof caseStudies[0]
+  study: CaseStudy
   index: number
 }) {
   const [isHovered, setIsHovered] = React.useState(false)
+
+  // Parse display title - remove project type prefix if present
+  const displayTitle = study.title.includes("|")
+    ? study.title.split("|").slice(1).join("|").trim()
+    : study.title
 
   return (
     <motion.div
@@ -71,95 +79,99 @@ function CaseStudyCard({
       }}
       className="group"
     >
-      <div
-        className="relative h-full"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <GlassCard
-          className="h-full overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
-          glowEffect={isHovered}
+      <Link href={`/work/${study.slug}`}>
+        <div
+          className="relative h-full"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Image placeholder with gradient */}
-          <div className="relative h-64 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-dunn-purple via-dunn-purple-dark to-dunn-purple-light opacity-90" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--dunn-green)_0%,_transparent_60%)] opacity-20" />
+          <GlassCard
+            className="h-full overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02]"
+            glowEffect={isHovered}
+          >
+            {/* Image */}
+            <div className="relative h-64 overflow-hidden">
+              {study.featuredImage ? (
+                <>
+                  <Image
+                    src={study.featuredImage}
+                    alt={study.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                </>
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-gradient-to-br from-dunn-purple via-dunn-purple-dark to-dunn-purple-light opacity-90" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_var(--dunn-green)_0%,_transparent_60%)] opacity-20" />
+                </>
+              )}
 
-            {/* Award badge */}
-            {study.award && (
+              {/* Hover overlay */}
               <motion.div
-                className="absolute top-4 right-4 z-20"
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + index * 0.1, type: "spring", stiffness: 200 }}
+                className="absolute inset-0 bg-dunn-purple/80 backdrop-blur-sm flex items-center justify-center z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <GlassBadge
-                  variant="warning"
-                  className="flex items-center gap-1.5 bg-amber-500/30 border-amber-400/50"
-                >
-                  <Award className="h-3 w-3" />
-                  {study.award}
-                </GlassBadge>
-              </motion.div>
-            )}
-
-            {/* Hover overlay */}
-            <motion.div
-              className="absolute inset-0 bg-dunn-purple/80 backdrop-blur-sm flex items-center justify-center z-10"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{
-                  y: isHovered ? 0 : 20,
-                  opacity: isHovered ? 1 : 0
-                }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="flex items-center gap-2 text-white font-medium"
-              >
-                View Case Study
-                <ArrowRight className="h-4 w-4" />
-              </motion.div>
-            </motion.div>
-
-            {/* Category badge */}
-            <div className="absolute bottom-4 left-4 z-20">
-              <GlassBadge variant="primary" className="bg-white/20">
-                {study.category}
-              </GlassBadge>
-            </div>
-          </div>
-
-          <GlassCardHeader className="pb-2">
-            <p className="text-sm font-medium text-dunn-green">{study.client}</p>
-            <h3 className="text-xl font-heading font-bold text-foreground group-hover:text-dunn-purple transition-colors">
-              {study.headline}
-            </h3>
-          </GlassCardHeader>
-
-          <GlassCardContent>
-            {/* Results metrics */}
-            <div className="grid grid-cols-2 gap-3">
-              {study.results.map((result, idx) => (
                 <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 + idx * 0.1 }}
-                  className="p-3 rounded-lg bg-muted/50 border border-border/50"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{
+                    y: isHovered ? 0 : 20,
+                    opacity: isHovered ? 1 : 0
+                  }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                  className="flex items-center gap-2 text-white font-medium"
                 >
-                  <p className="text-2xl font-bold text-dunn-purple">{result.metric}</p>
-                  <p className="text-xs text-muted-foreground">{result.label}</p>
+                  View Case Study
+                  <ArrowRight className="h-4 w-4" />
                 </motion.div>
-              ))}
+              </motion.div>
+
+              {/* Project type badge */}
+              {study.projectType && (
+                <div className="absolute bottom-4 left-4 z-20">
+                  <GlassBadge variant="primary" className="bg-white/20">
+                    {study.projectType}
+                  </GlassBadge>
+                </div>
+              )}
             </div>
-          </GlassCardContent>
-        </GlassCard>
-      </div>
+
+            <GlassCardHeader className="pb-2">
+              {study.client && (
+                <p className="text-sm font-medium text-dunn-green">{study.client}</p>
+              )}
+              <h3 className="text-xl font-heading font-bold text-foreground group-hover:text-dunn-purple transition-colors">
+                {displayTitle}
+              </h3>
+            </GlassCardHeader>
+
+            <GlassCardContent>
+              {/* Excerpt */}
+              {study.excerpt && (
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {study.excerpt}
+                </p>
+              )}
+              {/* Tags */}
+              {study.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {study.tags.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs px-2 py-1 rounded-full bg-dunn-purple/10 text-dunn-purple"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </GlassCardContent>
+          </GlassCard>
+        </div>
+      </Link>
     </motion.div>
   )
 }
@@ -197,51 +209,26 @@ const aggregateResults = [
 ]
 
 export default function WorkPage() {
+  const [caseStudies, setCaseStudies] = React.useState<CaseStudy[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    async function loadCaseStudies() {
+      const studies = await fetchCaseStudies()
+      setCaseStudies(studies)
+      setLoading(false)
+    }
+    loadCaseStudies()
+  }, [])
+
   return (
     <main id="main-content" className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-dunn-purple/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-dunn-green/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <GlassBadge variant="primary" className="mb-6">
-                Portfolio
-              </GlassBadge>
-            </motion.div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-foreground mb-6">
-              Our Work
-            </h1>
-
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-              Results that prove the power of empathy in action
-            </p>
-
-            {/* Decorative line */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="w-24 h-1 bg-gradient-to-r from-dunn-purple to-dunn-purple-light mx-auto mt-8 rounded-full"
-            />
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        badge="Portfolio"
+        title="Our Work"
+        description="See the power of Empathy-Driven Brand Building in action"
+      />
 
       {/* Case Studies Grid */}
       <section className="py-16 md:py-24" aria-labelledby="case-studies-heading">
@@ -260,11 +247,23 @@ export default function WorkPage() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
-            {caseStudies.map((study, index) => (
-              <CaseStudyCard key={study.id} study={study} index={index} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted/50 rounded-xl h-64 mb-4" />
+                  <div className="h-4 bg-muted/50 rounded w-1/3 mb-2" />
+                  <div className="h-6 bg-muted/50 rounded w-2/3" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-10">
+              {caseStudies.map((study, index) => (
+                <CaseStudyCard key={study.id} study={study} index={index} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -340,66 +339,68 @@ export default function WorkPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 md:py-32 relative overflow-hidden" aria-labelledby="cta-heading">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-dunn-purple/5 to-dunn-purple-light/5 rounded-full blur-3xl" />
-        </div>
+      <section className="py-24 lg:py-32 relative overflow-hidden" aria-labelledby="cta-heading">
+        {/* Gradient background */}
+        <div
+          className="absolute inset-0 -z-10"
+          style={{
+            background: `
+              radial-gradient(ellipse 60% 50% at 50% 100%, var(--dunn-purple) 0%, transparent 60%),
+              linear-gradient(to bottom, var(--background), var(--muted))
+            `,
+          }}
+        />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <GlassCard className="p-10 md:p-16 bg-card/80">
-              <h2 id="cta-heading" className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-foreground mb-6">
-                Ready to see results like these?
-              </h2>
+            <motion.h2
+              id="cta-heading"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="font-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6"
+            >
+              Ready to see results like these?
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">
+                Let&apos;s make it happen.
+              </span>
+            </motion.h2>
 
-              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto">
-                Let us show you how Empathy-Driven Brand Building can transform your marketing and grow your business.
-              </p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto"
+            >
+              Let us show you how Empathy-Driven Brand Building can transform your marketing and grow your business.
+            </motion.p>
 
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link href="/contact">
-                  <GlassButton
-                    variant="primary"
-                    size="lg"
-                    className="bg-gradient-to-r from-dunn-purple to-dunn-purple-light hover:from-dunn-purple-light hover:to-dunn-purple text-white px-10 py-6 text-lg shadow-lg shadow-dunn-purple/25"
-                    glowEffect
-                  >
-                    Start a Conversation
-                    <ArrowRight className="h-5 w-5 ml-2" />
-                  </GlassButton>
-                </Link>
-              </motion.div>
-
-              {/* Contact info */}
-              <div className="mt-10 pt-8 border-t border-border/50">
-                <p className="text-sm text-muted-foreground mb-2">Or reach out directly</p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-                  <a
-                    href={`tel:${siteConfig.phone.replace(/[^0-9]/g, '')}`}
-                    className="text-dunn-purple hover:text-dunn-purple-light transition-colors"
-                  >
-                    {siteConfig.phone}
-                  </a>
-                  <span className="hidden sm:inline text-border">|</span>
-                  <a
-                    href={`mailto:${siteConfig.email}`}
-                    className="text-dunn-purple hover:text-dunn-purple-light transition-colors"
-                  >
-                    {siteConfig.email}
-                  </a>
-                </div>
-              </div>
-            </GlassCard>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+            >
+              <Link href="/contact">
+                <GlassButton
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground font-semibold shadow-[0_4px_20px_var(--glow-primary)] hover:shadow-[0_8px_30px_var(--glow-primary)] transition-all duration-300"
+                  glowEffect
+                >
+                  Start a Conversation
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </GlassButton>
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
