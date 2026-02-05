@@ -1,0 +1,124 @@
+# Dunn Marketing - Proposed Sitemap
+
+## Primary Navigation
+
+/                           Homepage
+/services/                  Services Landing
+/services/branding/         Branding Service
+/services/strategy/         Strategy Service
+/services/content/          Content Service
+/services/digital/          Digital Service
+/services/advertising/      Advertising Service
+/services/public-relations/ Public Relations Service
+/services/analytics/        Analytics Service
+/services/fractional-cmo/   Fractional CMO Service (KEY DIFFERENTIATOR)
+/process/                   Empathy-Driven Brand Building Process
+/work/                      Portfolio Landing
+/work/[case-study-slug]/    Individual Case Studies
+/about/                     About Us
+/about/team/                Team Listing
+/about/team/[name]/         Individual Team Member Bios
+/about/values/              Core Values
+/about/awards/              Awards & Recognition
+/contact/                   Contact Us
+/contact/schedule/          Schedule a Call (Calendly)
+
+## Secondary Pages
+
+/insights/                  Blog/Insights Landing
+/insights/[post-slug]/      Individual Blog Posts
+/insights/category/[cat]/   Blog Category Pages
+/resources/                 Resources Hub
+/resources/guides/          Downloadable Guides
+/privacy/                   Privacy Policy
+
+## Industry Pages (Future)
+
+/industries/healthcare/     Healthcare Clients
+/industries/finance/        Financial Services Clients
+/industries/education/      Education Clients
+/industries/nonprofit/      Nonprofit Clients
+/industries/small-business/ Small Business Clients
+
+## XML Sitemap Structure
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://dunnmarketing.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/services/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/process/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/work/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/about/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/contact/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://dunnmarketing.com/insights/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>
+
+## Navigation Structure
+
+### Header Navigation
+- Services (dropdown with 8 items)
+- Process
+- Work
+- About
+- Contact (CTA button)
+
+### Footer Navigation
+Column 1: Services
+- Branding
+- Strategy
+- Content
+- Digital
+
+Column 2: Services (cont.)
+- Advertising
+- Public Relations
+- Analytics
+- Fractional CMO
+
+Column 3: Company
+- About
+- Team
+- Awards
+- Contact
+
+Column 4: Connect
+- Newsletter Signup
+- Social Links
+- Phone/Email
+
+## Key Changes from Current Site
+
+1. Individual service pages (currently just a list)
+2. Proper case study pages (currently blog posts)
+3. Team member individual pages (currently just photos)
+4. Industry pages for targeting
+5. Resources section for lead generation
+6. Scheduling page with Calendly embed
