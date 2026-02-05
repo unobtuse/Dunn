@@ -20,6 +20,7 @@ import { GlassInput } from "@/components/ui/glass-input"
 import { GlassTextarea } from "@/components/glass-textarea"
 import { GlassBadge } from "@/components/ui/glass-badge"
 import { GlassRippleButton } from "@/components/glass-ripple"
+import { PageHeader } from "@/components/layout/PageHeader"
 import { siteConfig, testimonials } from "@/data/content"
 
 // Form field wrapper with label and error handling
@@ -238,48 +239,11 @@ export default function ContactPage() {
   return (
     <main id="main-content" className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-dunn-purple/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-dunn-green/10 rounded-full blur-3xl" />
-        </div>
-
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <GlassBadge variant="primary" className="mb-6">
-                Get in Touch
-              </GlassBadge>
-            </motion.div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-foreground mb-6">
-              Let&apos;s Talk
-            </h1>
-
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
-              We&apos;re always excited to meet new people and take on new adventures together.
-            </p>
-
-            {/* Decorative line */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="w-24 h-1 bg-gradient-to-r from-dunn-purple to-dunn-purple-light mx-auto mt-8 rounded-full"
-            />
-          </motion.div>
-        </div>
-      </section>
+      <PageHeader
+        badge="Get in Touch"
+        title="Let's Talk"
+        description="We're always excited to meet new people and take on new adventures together."
+      />
 
       {/* Two-Column Layout: Form + Info */}
       <section className="py-16 md:py-24" aria-labelledby="contact-form-heading">
@@ -566,7 +530,7 @@ export default function ContactPage() {
                 </div>
               </motion.div>
 
-              {/* Map Placeholder */}
+              {/* Google Map */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -578,34 +542,30 @@ export default function ContactPage() {
                 </h3>
 
                 <div className="relative h-64 rounded-2xl overflow-hidden border border-border">
-                  {/* Map placeholder with gradient background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-dunn-purple/20 via-muted to-dunn-purple-light/10">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-dunn-purple/20 flex items-center justify-center">
-                          <MapPin className="h-6 w-6 text-dunn-purple" />
-                        </div>
-                        <p className="text-sm font-medium text-foreground">
-                          {siteConfig.address.split(',')[0]}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {siteConfig.address.split(',').slice(1).join(',')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Grid pattern overlay */}
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                      backgroundImage: `
-                        linear-gradient(to right, var(--dunn-purple) 1px, transparent 1px),
-                        linear-gradient(to bottom, var(--dunn-purple) 1px, transparent 1px)
-                      `,
-                      backgroundSize: '40px 40px'
-                    }}
+                  <iframe
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBlmWrmtZqJKOwrAOiPvCcevz1Qb0-06-8&q=${encodeURIComponent(siteConfig.address)}&zoom=15`}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Dunn Marketing office location"
+                    className="absolute inset-0"
                   />
+                </div>
+
+                {/* Address text below map */}
+                <div className="mt-4 text-center">
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.address)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-dunn-purple transition-colors"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    {siteConfig.address}
+                  </a>
                 </div>
               </motion.div>
             </motion.div>
